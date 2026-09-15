@@ -1,0 +1,39 @@
+@'
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Data & Lakehouse (NEVER commit raw data or local DBs)
+data/
+*.parquet
+*.csv
+*.duckdb
+*.json
+
+# dbt
+pipelines/dbt/nexus_gold/target/
+pipelines/dbt/nexus_gold/dbt_packages/
+pipelines/dbt/nexus_gold/logs/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment variables & Secrets
+.env
+.env.local
+*.pem
+*.key
+'@ | Out-File -FilePath "D:\nexus-ai\.gitignore" -Encoding utf8

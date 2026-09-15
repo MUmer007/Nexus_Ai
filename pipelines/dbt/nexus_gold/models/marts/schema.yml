@@ -1,0 +1,23 @@
+﻿version: 2
+
+models:
+  - name: gold_daily_order_summary
+    description: "Daily aggregated order metrics including revenue fill rate. Grain: day."
+    columns:
+      - name: order_date
+        description: "The date of the orders."
+        tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: "Total number of orders on this day."
+        tests:
+          - not_null
+      - name: revenue_fill_rate
+        description: "Ratio of fulfilled revenue to total requested revenue. Must be between 0 and 1."
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0.0
+                max_value: 1.0

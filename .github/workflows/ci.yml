@@ -54,10 +54,8 @@ jobs:
           uv pip install dbt-duckdb
 
       - name: Validate dbt Project Syntax
+        working-directory: pipelines/dbt/nexus_gold
         run: |
-          cd pipelines/dbt/nexus_gold
-          
-          # Hardcode the known profile name to eliminate bash/Python parsing bugs
           cat > profiles.yml << 'EOF'
           nexus_gold:
             target: dev
@@ -66,8 +64,12 @@ jobs:
                 type: duckdb
                 path: ':memory:'
           EOF
-          
+
           echo "Generated profiles.yml:"
           cat profiles.yml
-          
+
+          # Install packages declared in packages.yml (dbt_utils, etc.)
+          uv run dbt deps --profiles-dir .
+
+          # Validate project compilation
           uv run dbt parse --profiles-dir .

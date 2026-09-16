@@ -1,0 +1,60 @@
+﻿name: NEXUS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        run: uv sync --dev
+
+      - name: Run Ruff Linter
+        run: uv run ruff check pipelines/
+
+      - name: Python Syntax Check
+        run: |
+          find pipelines/ -name "*.py" -exec python -m py_compile {} +
+        shell: bash
+
+  dbt-compile-check:
+    name: dbt Syntax Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv & dbt
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          uv pip install dbt-core dbt-postgres
+
+      - name: Validate dbt Project
+        run: |
+          cd pipelines/dbt/nexus_gold
+          # dbt compile checks all SQL syntax and Jinja templating without needing a live DB
+          uv run dbt compile --target dev

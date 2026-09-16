@@ -57,16 +57,30 @@ jobs:
         run: |
           cd pipelines/dbt/nexus_gold
           
-          PROJECT_NAME=$(grep '^name:' dbt_project.yml | awk '{print $2}' | tr -d '"')
-          echo "Found dbt project name: $PROJECT_NAME"
+          # Robustly parse the profile name, handling UTF-8 BOM
+          PROFILE_NAME="$(python3 - <<'PY'
+from pathlib import Path
+import re
+
+text = Path("dbt_project.yml").read_text(encoding="utf-8-sig")
+match = re.search(r"(?m)^\s*profile\s*:\s*['\"]?([^'\"#\s]+)", text)
+
+if not match:
+    raise SystemExit("Could not find a valid 'profile' in dbt_project.yml")
+
+print(match.group(1))
+PY
+)"
+          echo "Found dbt profile name: $PROFILE_NAME"
           
-          cat <<EOF > profiles.yml
-          $PROJECT_NAME:
-            target: dev
-            outputs:
-              dev:
-                type: duckdb
-                path: ':memory:'
-          EOF
+          # Generate strictly valid YAML
+          cat > profiles.yml <<EOF
+$PROFILE_NAME:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ":memory:"
+EOF
           
           uv run dbt parse --profiles-dir .

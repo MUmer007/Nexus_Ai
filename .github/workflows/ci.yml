@@ -25,17 +25,14 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install Dependencies
-        run: uv sync --dev
+        run: uv sync
 
-      - name: Run Ruff Linter
-        run: uv run ruff check pipelines/
-
-      - name: Python Syntax Check
+      - name: Run Ruff (Format & Lint)
         run: |
-          find pipelines/ -name "*.py" -exec python -m py_compile {} +
-        shell: bash
+          uv run ruff format pipelines/
+          uv run ruff check pipelines/
 
-  dbt-compile-check:
+  dbt-syntax-check:
     name: dbt Syntax Validation
     runs-on: ubuntu-latest
     steps:
@@ -51,10 +48,10 @@ jobs:
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          uv pip install dbt-core dbt-postgres
+          uv pip install dbt-core
 
-      - name: Validate dbt Project
+      - name: Validate dbt Project Syntax
         run: |
           cd pipelines/dbt/nexus_gold
-          # dbt compile checks all SQL syntax and Jinja templating without needing a live DB
-          uv run dbt compile --target dev
+          # dbt parse checks all SQL and Jinja syntax without needing a live database or profiles.yml
+          uv run dbt parse

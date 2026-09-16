@@ -54,13 +54,13 @@ jobs:
         run: |
           cd pipelines/dbt/nexus_gold
           
-          # Create a dummy profiles.yml to satisfy dbt parse in CI
+          # Create a strictly valid dummy profiles.yml for DuckDB in CI
           echo "nexus_gold:" > profiles.yml
           echo "  target: dev" >> profiles.yml
           echo "  outputs:" >> profiles.yml
           echo "    dev:" >> profiles.yml
           echo "      type: duckdb" >> profiles.yml
-          echo "      path: ":memory:"" >> profiles.yml
+          echo "      path: ':memory:'" >> profiles.yml
           
           # Parse the project using the dummy profile
           uv run dbt parse --profiles-dir .

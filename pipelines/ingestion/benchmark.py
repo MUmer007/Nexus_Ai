@@ -2,14 +2,15 @@
 
 import psycopg
 
+
 def main():
     conn_string = "host=localhost port=5432 dbname=nexus_supply_chain user=nexus password=nexus123"
-    
-    with psycopg.connect(conn_string) as conn:
+
+    with psycopg.connect(conn_string) as conn:  # noqa: SIM117
         with conn.cursor() as cur:
             # Step 1: Seed parent tables (products and fulfillment_centers)
             print("⏳ Seeding parent tables...")
-            
+
             # Insert 100 products
             cur.execute("""
                 INSERT INTO products (supplier_id, name, category, unit_cost)
@@ -22,7 +23,7 @@ def main():
                     (random() * 100)::numeric(10,2)
                 FROM generate_series(1, 100) AS i;
             """)
-            
+
             # Insert 5 fulfillment centers
             cur.execute("""
                 INSERT INTO fulfillment_centers (name, region, capacity_units)
@@ -32,7 +33,7 @@ def main():
                     10000
                 FROM generate_series(1, 5) AS i;
             """)
-            
+
             conn.commit()
             print("✅ Seeded 100 products and 5 fulfillment centers.\n")
 
@@ -72,10 +73,13 @@ def main():
             for row in plan_unindexed:
                 print(row[0])
             print("-" * 50)
-            
+
             print("\n💡 Look at the output above!")
             print("Query 1 should say 'Index Scan' or 'Bitmap Index Scan' (Fast!)")
-            print("Query 2 should say 'Seq Scan' (Sequential Scan - reads every single row, Slow!)")
+            print(
+                "Query 2 should say 'Seq Scan' (Sequential Scan - reads every single row, Slow!)"
+            )
+
 
 if __name__ == "__main__":
     main()

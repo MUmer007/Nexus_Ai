@@ -57,30 +57,17 @@ jobs:
         run: |
           cd pipelines/dbt/nexus_gold
           
-          # Robustly parse the profile name, handling UTF-8 BOM
-          PROFILE_NAME="$(python3 - <<'PY'
-from pathlib import Path
-import re
-
-text = Path("dbt_project.yml").read_text(encoding="utf-8-sig")
-match = re.search(r"(?m)^\s*profile\s*:\s*['\"]?([^'\"#\s]+)", text)
-
-if not match:
-    raise SystemExit("Could not find a valid 'profile' in dbt_project.yml")
-
-print(match.group(1))
-PY
-)"
-          echo "Found dbt profile name: $PROFILE_NAME"
+          # Hardcode the known profile name to eliminate bash/Python parsing bugs
+          cat > profiles.yml << 'EOF'
+          nexus_gold:
+            target: dev
+            outputs:
+              dev:
+                type: duckdb
+                path: ':memory:'
+          EOF
           
-          # Generate strictly valid YAML
-          cat > profiles.yml <<EOF
-$PROFILE_NAME:
-  target: dev
-  outputs:
-    dev:
-      type: duckdb
-      path: ":memory:"
-EOF
+          echo "Generated profiles.yml:"
+          cat profiles.yml
           
           uv run dbt parse --profiles-dir .

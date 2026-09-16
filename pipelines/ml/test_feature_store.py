@@ -1,6 +1,5 @@
-﻿from feast import FeatureStore
-from datetime import datetime
-import pandas as pd
+
+from feast import FeatureStore
 
 # Initialize the feature store
 store = FeatureStore(repo_path="../../nexus_features/feature_repo")
@@ -25,5 +24,5 @@ features = store.get_online_features(
 
 print("🎯 Features served from ONLINE store (real-time serving):")
 print(features)
-print(f"\n⚡ This is sub-millisecond latency - perfect for real-time ML inference!")
+print("\n⚡ This is sub-millisecond latency - perfect for real-time ML inference!")
 print(f"✅ Retrieved {len(features)} feature rows")

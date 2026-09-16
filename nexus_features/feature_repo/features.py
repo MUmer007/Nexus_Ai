@@ -1,7 +1,8 @@
-﻿from datetime import timedelta
-from feast import Entity, FeatureService, FeatureView, Field, FileSource, ValueType
-from feast.types import Int64, Float64, String
 import os
+from datetime import timedelta
+
+from feast import Entity, FeatureService, FeatureView, Field, FileSource, ValueType
+from feast.types import Float64, Int64, String
 
 # Use absolute paths to avoid relative path issues
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

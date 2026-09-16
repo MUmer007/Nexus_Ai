@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-webserver:
+    image: apache/airflow:2.10.3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46Cm30UqTzK1j8X4XqY1Y5X6Z7a8b9c0d1e2f3g4h5i=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
+    volumes:
+      # Mount your local project directories into the container
+      - ./pipelines/airflow/dags:/opt/airflow/dags
+      - D:/nexus-ai/pipelines/dbt:/opt/airflow/dbt
+      - D:/nexus-ai/pipelines/ingestion:/opt/airflow/ingestion
+      - ./data:/opt/airflow/data
+    ports:
+      - "8081:8080"
+    command: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@nexus.ai --password admin || true &&
+        airflow webserver
+      "
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46Cm30UqTzK1j8X4XqY1Y5X6Z7a8b9c0d1e2f3g4h5i=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ./pipelines/airflow/dags:/opt/airflow/dags
+      - D:/nexus-ai/pipelines/dbt:/opt/airflow/dbt
+      - D:/nexus-ai/pipelines/ingestion:/opt/airflow/ingestion
+      - ./data:/opt/airflow/data
+    command: airflow scheduler
+
+volumes:
+  postgres-db-volume:

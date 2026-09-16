@@ -22,10 +22,12 @@ jobs:
       - name: Install uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Install Dependencies
-        run: uv sync
+        run: |
+          uv venv
+          uv sync
 
       - name: Run Ruff (Format & Lint)
         run: |
@@ -47,18 +49,17 @@ jobs:
       - name: Install uv & dbt-duckdb
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          uv venv
           uv pip install dbt-duckdb
 
       - name: Validate dbt Project Syntax
         run: |
           cd pipelines/dbt/nexus_gold
           
-          # 1. Dynamically read the project name from dbt_project.yml
           PROJECT_NAME=$(grep '^name:' dbt_project.yml | awk '{print $2}' | tr -d '"')
           echo "Found dbt project name: $PROJECT_NAME"
           
-          # 2. Create a strictly valid dummy profiles.yml using bash heredoc
           cat <<EOF > profiles.yml
           $PROJECT_NAME:
             target: dev
@@ -68,5 +69,4 @@ jobs:
                 path: ':memory:'
           EOF
           
-          # 3. Parse the project using the dummy profile
           uv run dbt parse --profiles-dir .

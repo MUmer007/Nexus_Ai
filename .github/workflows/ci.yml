@@ -69,8 +69,32 @@ jobs:
           echo "Generated profiles.yml:"
           cat profiles.yml
 
-          # Install packages declared in packages.yml (dbt_utils, etc.)
           uv run dbt deps --profiles-dir .
-
-          # Validate project compilation
           uv run dbt parse --profiles-dir .
+
+  ai-evaluation:
+    name: AI Evaluation & Regression Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Dependencies
+        run: |
+          uv venv
+          uv sync
+
+      - name: Run AI Evaluation Harness
+        run: |
+          # Run the pytest suite for AI quality regression gates
+          uv run pytest pipelines/ai/evals/test_copilot_eval.py -v

@@ -1,4 +1,3 @@
-
 from feast import FeatureStore
 
 # Initialize the feature store

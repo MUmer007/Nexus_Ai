@@ -29,10 +29,11 @@ jobs:
           uv venv
           uv sync
 
-      - name: Run Ruff (Format & Lint)
-        run: |
-          uv run ruff format pipelines/
-          uv run ruff check pipelines/
+      - name: Run Ruff Format Check
+        run: uv run ruff format --check pipelines/
+
+      - name: Run Ruff Lint
+        run: uv run ruff check pipelines/
 
   dbt-syntax-check:
     name: dbt Syntax Validation

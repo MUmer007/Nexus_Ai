@@ -1,10 +1,8 @@
-"""
+﻿"""
 NEXUS AI Copilot Engine
 Demonstrates typed tool-calling and SQL safety guardrails.
 """
-
 import sqlite3
-
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
 
@@ -22,7 +20,6 @@ conn.commit()
 
 # --- 2. Define the Tools (with strict guardrails) ---
 
-
 def query_knowledge_base(query: str) -> str:
     """Searches the vector database for contextual business knowledge."""
     query_vector = embedding_model.encode(query).tolist()
@@ -35,11 +32,8 @@ def query_knowledge_base(query: str) -> str:
     if not results:
         return "No relevant documents found in the knowledge base."
 
-    citations = [
-        f"[Doc {r.id}] (Score: {r.score:.2f}): {r.payload['text']}" for r in results
-    ]
+    citations = [f"[Doc {r.id}] (Score: {r.score:.2f}): {r.payload['text']}" for r in results]
     return "\n".join(citations)
-
 
 def execute_safe_sql(sql: str) -> str:
     """
@@ -67,35 +61,34 @@ def execute_safe_sql(sql: str) -> str:
     except sqlite3.Error as e:
         return f"❌ Database Error: {e!s}"
 
-
 # --- 3. The Copilot Router (Simulates LLM Tool-Calling) ---
-
 
 def copilot_process_query(user_query: str) -> str:
     query_lower = user_query.lower()
 
     print("🧠 Copilot Reasoning: Analyzing query intent...")
 
-    if any(
-        word in query_lower
-        for word in ["why", "reason", "context", "policy", "supplier"]
-    ):
+    # Route to Knowledge Base for contextual questions
+    if any(word in query_lower for word in ["why", "reason", "context", "policy", "supplier"]):
         print("   ➔ Tool Selected: query_knowledge_base")
         context = query_knowledge_base(user_query)
         return f"📝 Based on the knowledge base:\n{context}"
 
-    elif any(word in query_lower for word in ["revenue", "sales", "how much", "total"]):
+    # Route to SQL for data queries OR SQL commands (which will be blocked by guardrails)
+    elif any(word in query_lower for word in ["revenue", "sales", "how much", "total"]) or \
+         any(kw in query_lower.upper() for kw in ["SELECT", "DROP", "DELETE", "INSERT", "UPDATE", "ALTER", "TRUNCATE"]):
         print("   ➔ Tool Selected: execute_safe_sql")
-        generated_sql = (
-            "SELECT region, revenue FROM gold_revenue WHERE region = 'North'"
-        )
+        # For safety testing, pass the raw query; for real queries, generate SQL
+        if any(kw in query_lower.upper() for kw in ["DROP", "DELETE", "INSERT", "UPDATE", "ALTER", "TRUNCATE"]):
+            generated_sql = user_query  # Pass through for guardrail testing
+        else:
+            generated_sql = "SELECT region, revenue FROM gold_revenue WHERE region = 'North'"
         print(f"   ➔ Generated SQL: {generated_sql}")
         db_result = execute_safe_sql(generated_sql)
         return f"📊 Database Query Result:\n{db_result}"
 
     else:
         return "🤔 I'm not sure how to answer that."
-
 
 # --- 4. Test the Copilot ---
 

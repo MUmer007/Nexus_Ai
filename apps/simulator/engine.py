@@ -2,10 +2,9 @@
 NEXUS Decision Simulator Engine
 Pure Python simulation logic — no DB dependencies, easily testable.
 """
-import pandas as pd
-import numpy as np
 from dataclasses import dataclass
-from typing import Dict
+
+import pandas as pd
 
 
 @dataclass
@@ -41,7 +40,7 @@ class DecisionSimulator:
     def __init__(self, baseline: BaselineMetrics = None):
         self.baseline = baseline or BaselineMetrics()
     
-    def simulate(self, scenario: ScenarioInputs) -> Dict[str, float]:
+    def simulate(self, scenario: ScenarioInputs) -> dict[str, float]:
         """
         Run the simulation and return projected KPIs.
         
@@ -121,7 +120,7 @@ class DecisionSimulator:
                                   / (b.total_revenue * gross_margin - b.expedited_shipping_cost)) * 100,
         }
     
-    def compare_scenarios(self, scenarios: Dict[str, ScenarioInputs]) -> pd.DataFrame:
+    def compare_scenarios(self, scenarios: dict[str, ScenarioInputs]) -> pd.DataFrame:
         """Compare multiple scenarios side-by-side."""
         results = {}
         for name, scenario in scenarios.items():

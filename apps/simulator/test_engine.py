@@ -1,8 +1,9 @@
 ﻿"""Quick test of the simulation engine."""
 import sys
+
 sys.path.insert(0, "apps/simulator")
 
-from engine import DecisionSimulator, ScenarioInputs, BaselineMetrics
+from engine import DecisionSimulator, ScenarioInputs
 
 sim = DecisionSimulator()
 

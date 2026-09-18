@@ -11,7 +11,6 @@ from pathlib import Path
 import pytest
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from qdrant_client.http.exceptions import UnexpectedResponse
 from sentence_transformers import SentenceTransformer
 
 # Add parent directory to path to import the copilot
@@ -46,9 +45,11 @@ def setup_qdrant_test_data():
             # Check if we can ping Qdrant
             client.get_collections()
             break  # Success!
-        except Exception:
+        except (ConnectionError, TimeoutError, OSError) as exc:
             if attempt == max_retries - 1:
-                raise RuntimeError("Failed to connect to Qdrant after 5 attempts.")
+                raise RuntimeError(
+                    "Failed to connect to Qdrant after 5 attempts."
+                ) from exc
             time.sleep(2)  # Wait 2 seconds before retrying
 
     # Ensure clean state

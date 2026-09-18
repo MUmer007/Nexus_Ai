@@ -2,15 +2,16 @@
 NEXUS Decision Simulator — Interactive Web UI
 Run with: uv run streamlit run apps/simulator/app.py
 """
-import streamlit as st
-import pandas as pd
-import plotly.express as px
 import sys
 from pathlib import Path
 
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+
 # Add simulator to path
 sys.path.insert(0, str(Path(__file__).parent))
-from engine import DecisionSimulator, ScenarioInputs, BaselineMetrics
+from engine import DecisionSimulator, ScenarioInputs
 
 # Page config
 st.set_page_config(
@@ -199,7 +200,7 @@ fig = px.scatter(
     title="Explore the tradeoff: more inventory reduces delays, promotions increase revenue",
     labels={"Delay Rate": "Delay Rate", "Revenue": "Projected Revenue ($)"},
 )
-fig.update_traces(marker=dict(line=dict(width=1, color='DarkSlateGrey')))
+fig.update_traces(marker={"line": {"width": 1, "color": 'DarkSlateGrey'}})
 fig.update_layout(xaxis_tickformat='.1%', yaxis_tickformat='$,.0f')
 
 st.plotly_chart(fig, width="stretch")

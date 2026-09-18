@@ -1,10 +1,14 @@
-name: NEXUS CI/CD Pipeline
+﻿name: NEXUS CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
 
 jobs:
   code-quality:
@@ -17,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install uv
         run: |
@@ -27,7 +31,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync --locked --locked
+          uv sync --locked
 
       - name: Run Ruff Format Check
         run: uv run ruff format --check pipelines/
@@ -45,7 +49,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install uv & dbt-duckdb
         run: |
@@ -65,10 +69,8 @@ jobs:
                 type: duckdb
                 path: ':memory:'
           EOF
-
           echo "Generated profiles.yml:"
           cat profiles.yml
-
           uv run dbt deps --profiles-dir .
           uv run dbt parse --profiles-dir .
 
@@ -82,7 +84,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install uv
         run: |
@@ -92,9 +94,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync --locked --locked
+          uv sync --locked
 
       - name: Run AI Evaluation Harness
-        run: |
-          # Run the pytest suite for AI quality regression gates
-          uv run pytest pipelines/ai/evals/test_copilot_eval.py -v
+        run: uv run pytest pipelines/ai/evals/test_copilot_eval.py -v

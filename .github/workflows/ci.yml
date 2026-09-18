@@ -1,4 +1,4 @@
-﻿name: NEXUS CI/CD Pipeline
+name: NEXUS CI/CD Pipeline
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync
+          uv sync --locked
 
       - name: Run Ruff Format Check
         run: uv run ruff format --check pipelines/
@@ -92,7 +92,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync
+          uv sync --locked
 
       - name: Run AI Evaluation Harness
         run: |

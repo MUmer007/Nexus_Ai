@@ -1,14 +1,18 @@
-﻿"""
+"""
 NEXUS MLOps: Automated Model Promotion Engine
 Promotes a 'challenger' model to 'champion' if it meets quality gates.
 """
+
 import os
+
 import mlflow
-from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
+from mlflow.tracking import MlflowClient
 
 # 1. Initialize MLflow Client
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 DB_PATH = os.path.join(PROJECT_ROOT, "mlflow.db")
 mlflow.set_tracking_uri(f"sqlite:///{DB_PATH}")
 client = MlflowClient()

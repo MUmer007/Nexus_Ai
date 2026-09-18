@@ -1,12 +1,16 @@
-﻿"""
+"""
 NEXUS MLOps: Tag the latest trained model as 'challenger'
 Run this before the promotion script to set up the test.
 """
+
 import os
+
 import mlflow
 from mlflow.tracking import MlflowClient
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 DB_PATH = os.path.join(PROJECT_ROOT, "mlflow.db")
 mlflow.set_tracking_uri(f"sqlite:///{DB_PATH}")
 client = MlflowClient()
@@ -21,7 +25,7 @@ def tag_latest_as_challenger():
     # Check if the model is registered
     try:
         client.get_registered_model(MODEL_NAME)
-    except Exception:
+    except mlflow.exceptions.MlflowException:
         print(f"❌ Model '{MODEL_NAME}' is not registered yet.")
         print(
             "💡 Run your training script first: "

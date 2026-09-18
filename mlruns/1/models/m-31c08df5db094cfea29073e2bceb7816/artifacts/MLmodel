@@ -1,0 +1,24 @@
+artifact_path: file:D:/nexus-ai/mlruns/1/models/m-31c08df5db094cfea29073e2bceb7816/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.14
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types:
+    - sklearn.tree._tree.Tree
+mlflow_version: 3.16.1
+model_id: m-31c08df5db094cfea29073e2bceb7816
+model_size_bytes: 9234394
+model_uuid: m-31c08df5db094cfea29073e2bceb7816
+prompts: null
+run_id: 0acefd66829d448c8287db7e371d3cd7
+utc_time_created: '2026-09-18 11:42:34.913743'

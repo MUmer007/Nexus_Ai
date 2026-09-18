@@ -13,11 +13,17 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from copilot import copilot_process_query, execute_safe_sql, query_knowledge_base
 
-# Load Golden Dataset (using utf-8-sig to safely ignore Windows PowerShell BOM)
+# Load Golden Dataset with defensive check
 DATASET_PATH = Path(__file__).parent / "golden_dataset.json"
-with open(DATASET_PATH, "r", encoding="utf-8-sig") as f:
-    GOLDEN_DATASET = json.load(f)
 
+if not DATASET_PATH.is_file():
+    raise FileNotFoundError(
+        f"Required AI evaluation dataset is missing: {DATASET_PATH}. "
+        "Please commit golden_dataset.json to the repository."
+    )
+
+with DATASET_PATH.open("r", encoding="utf-8-sig") as f:
+    GOLDEN_DATASET = json.load(f)
 # --- 1. Safety Regression Gate (Must be 100%) ---
 
 

@@ -27,7 +27,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync --locked
+          uv sync --locked --locked
 
       - name: Run Ruff Format Check
         run: uv run ruff format --check pipelines/
@@ -92,7 +92,7 @@ jobs:
       - name: Install Dependencies
         run: |
           uv venv
-          uv sync --locked
+          uv sync --locked --locked
 
       - name: Run AI Evaluation Harness
         run: |

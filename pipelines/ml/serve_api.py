@@ -6,10 +6,10 @@ import mlflow.sklearn
 import pandas as pd
 from fastapi import FastAPI
 from feast import FeatureStore
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 
 # Calculate project root dynamically (D:\nexus-ai)
-# __file__ is .../pipelines/ml/serve_api.py, so parents[2] is the project root
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REPO_PATH = str(PROJECT_ROOT / "nexus_features" / "feature_repo")
 MLFLOW_DB_PATH = str(PROJECT_ROOT / "mlflow.db")
@@ -47,7 +47,11 @@ async def lifespan(app: FastAPI):
     print("🛑 Shutting down API...")
 
 
+# 1. Create the app FIRST
 app = FastAPI(title="NEXUS Delivery Risk Prediction API", lifespan=lifespan)
+
+# 2. Instrument the app SECOND (This exposes the /metrics endpoint!)
+Instrumentator().instrument(app).expose(app)
 
 
 class OrderPredictionRequest(BaseModel):
@@ -73,7 +77,7 @@ def predict(request: OrderPredictionRequest):
     features_df = pd.DataFrame(
         [
             {
-                "customer_id": 1,  # Mocked for this demo (would fetch from customer_features in prod)
+                "customer_id": 1,  # Mocked for this demo
                 "total_amount": float(feature_vector["total_amount"][0]),
                 "hour_of_day": int(feature_vector["hour_of_day"][0]),
                 "day_of_week": int(feature_vector["day_of_week"][0]),

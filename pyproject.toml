@@ -13,18 +13,23 @@ dependencies = [
     "langgraph>=1.2.11",
     "mlflow>=3.16.1",
     "openai>=3.14.1",
-    "pandas>=3.0.5",
+    "pandas>=2.0.0",
     "plotly>=7.1.0",
     "psycopg[binary]>=3.3.5",
     "pydantic>=2.13.5",
     "pyiceberg[s3fs]>=0.12.0",
     "pyspark==3.5.3",
+    "pytest>=9.1.1",
     "qdrant-client>=1.19.1",
     "sentence-transformers>=6.0.1",
+    "setuptools>=65.0.0",
     "sqlalchemy>=2.0.52",
     "streamlit>=1.64.0",
     "tiktoken>=0.14.0",
-    "uvicorn[standard]>=0.53.0",
+    "uvicorn>=0.20.0",
+    "setuptools",
+    "prometheus-fastapi-instrumentator>=8.1.0",
+    "feast>=0.36.0",
 ]
 
 [project.scripts]
@@ -41,3 +46,5 @@ dev = [
     "pytest>=9.1.1",
     "ruff==0.16.6",
 ]
+
+

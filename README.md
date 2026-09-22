@@ -198,7 +198,7 @@ Dashboard config lives in `observability/grafana/` — the same pattern used to 
 
 This application is deployed on **Railway** using a highly optimized, multi-stage, CPU-only Docker build to minimize image size and cold-start times.
 
-- **Live API:** `https://nexus-ai-production.up.railway.app` *(replace with your actual Railway URL)*
+- **Live API:** `https://nexus-ai-production.up.railway.app` 
 - **CI/CD:** Automated deployments trigger on every push to `main` via GitHub Actions.
 
 ---
